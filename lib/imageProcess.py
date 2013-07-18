@@ -2,11 +2,11 @@ from openmdao.lib.datatypes.api import Float, Dict, Array, List, Int, Bool
 from openmdao.main.api import Component, Assembly
 import numpy as np
 import cv2
+import liblo
 
 """
 Whole-frame image processing components & helper methods
 """
-
 class RGBSplit(Component):
     """
     Extract the red, green, and blue channels from an (n,m,3) shaped 
@@ -99,13 +99,15 @@ class showBPMtext(Component):
     fps = Float(iotype = "in")
     size = Float(iotype = "in")
     n = Int(iotype = "in")
-    
     def __init__(self):
         super(showBPMtext,self).__init__()
         self.add("frame_in", Array(iotype="in"))
         self.add("frame_out", Array(iotype="out"))
+    	self.target = liblo.Address("127.0.0.1",57120)
     
     def execute(self):
+	print "%0.1f bpm" % self.bpm
+	liblo.send( self.target, "/bpm", self.bpm)
         if self.ready:
             col = (0,255,0)
             text = "%0.1f bpm" % self.bpm
