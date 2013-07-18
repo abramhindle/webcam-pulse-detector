@@ -3,6 +3,7 @@ from openmdao.main.api import Component, Assembly
 import numpy as np
 import time
 import cv2
+import liblo
 
 """
 Whole-frame image processing components & helper methods
@@ -112,14 +113,16 @@ class showBPMtext(Component):
     fps = Float(iotype="in")
     size = Float(iotype="in")
     n = Int(iotype="in")
-
     def __init__(self):
         super(showBPMtext, self).__init__()
         self.add("frame_in", Array(iotype="in"))
         self.add("frame_out", Array(iotype="out"))
         self.bpms = []
+    	self.target = liblo.Address("127.0.0.1",57120)
 
     def execute(self):
+	print "%0.1f bpm" % self.bpm
+	liblo.send( self.target, "/bpm", self.bpm)
         self.bpms.append([time.time(), self.bpm])
         if self.ready:
             col = (0, 255, 0)

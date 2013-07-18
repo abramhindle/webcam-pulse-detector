@@ -4,7 +4,7 @@ import cv2
 import pylab
 import os
 import sys
-
+import liblo
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -50,6 +50,8 @@ class findFaceGetPulse(object):
 
         self.idx = 1
         self.find_faces = True
+        self.target = liblo.Address("127.0.0.1",57120)
+
 
     def find_faces_toggle(self):
         self.find_faces = not self.find_faces
@@ -230,6 +232,8 @@ class findFaceGetPulse(object):
             gap = (self.buffer_size - L) / self.fps
             # self.bpms.append(bpm)
             # self.ttimes.append(time.time())
+            print "%0.1f bpm" % self.bpm
+            liblo.send( self.target, "/bpm", self.bpm)
             if gap:
                 text = "(estimate: %0.1f bpm, wait %0.0f s)" % (self.bpm, gap)
             else:
