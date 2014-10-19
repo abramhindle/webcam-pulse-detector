@@ -102,6 +102,7 @@ class BufferFFT(Component):
         interpolated = np.interp(self.even_times, self.times, self.samples)
         interpolated = np.hamming(n) * interpolated
         self.interpolated = interpolated
+        interpolated = interpolated - np.mean(interpolated)
         # Perform the FFT
         fft = np.fft.rfft(interpolated)
         self.freqs = float(self.fps)/n*np.arange(n/2 + 1)
@@ -178,7 +179,7 @@ class bandProcess(Component):
             maxidx = np.argmax(self.fft)
             self.peak_hz = self.freqs[maxidx]
             self.phase = np.angle(self.fft_in)[idx][maxidx]
-        except:
+        except ValueError:
             pass #temporary fix for no-data situations
 
 class Cardiac(bandProcess):
